@@ -1,69 +1,88 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# LGS - Lucky Good Store
 
-Currently, two official plugins are available:
+LGS (Lucky Good Store) adalah aplikasi web toko online yang dibangun menggunakan React, Vite, TypeScript, dan SWC. Proyek ini menggunakan pnpm sebagai package manager untuk instalasi dan manajemen dependensi yang lebih cepat dan efisien.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Fitur Awal
 
-## Expanding the ESLint configuration
+- Inisialisasi aplikasi React dengan Vite dan TypeScript
+- Hot Module Replacement (HMR) untuk pengembangan yang cepat
+- Konfigurasi linting dengan ESLint
+- Pengujian dengan Vitest
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Teknologi yang Digunakan
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- [React](https://react.dev/) ^19
+- [Vite](https://vitejs.dev/) ^7
+- [TypeScript](https://www.typescriptlang.org/) ^5
+- [SWC](https://swc.rs/) (melalui @vitejs/plugin-react-swc)
+- [pnpm](https://pnpm.io/) sebagai package manager
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Instalasi & Menjalankan Aplikasi
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/faiz-muttaqin/lgs.git
+   cd lgs
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Menjalankan aplikasi (development)**
+   ```bash
+   pnpm run dev
+   ```
+
+4. **Build aplikasi untuk produksi**
+   Output build akan berada di folder `docs` (bukan `dist`).
+   ```bash
+   pnpm run build
+   ```
+
+5. **Preview hasil build**
+   ```bash
+   pnpm run preview
+   ```
+
+## Struktur Folder
+
+- `src/` : Source code aplikasi
+- `docs/` : Output build produksi
+- `public/` : File statis
+
+## Pengembangan
+
+- **Linting**
+  ```bash
+  pnpm run lint
+  ```
+- **Type Checking**
+  ```bash
+  pnpm run typecheck
+  ```
+- **Testing**
+  ```bash
+  pnpm run test
+  ```
+
+## Konfigurasi Build ke Folder docs
+
+Untuk mengubah output build ke folder `docs`, pastikan konfigurasi berikut ada di `vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    outDir: 'docs',
   },
-])
+});
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+LGS - Lucky Good Store © 2025
