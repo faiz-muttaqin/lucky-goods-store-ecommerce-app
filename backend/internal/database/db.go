@@ -10,11 +10,12 @@ import (
 )
 
 var DB *gorm.DB
-var DB_TRX *gorm.DB
-var DB_PARAM *gorm.DB
-var DB_MERCHANT *gorm.DB
-var DB_ODOO *gorm.DB
-var DB_ODOO_CS *gorm.DB
+
+// var DB_TRX *gorm.DB
+// var DB_PARAM *gorm.DB
+// var DB_MERCHANT *gorm.DB
+// var DB_ODOO *gorm.DB
+// var DB_ODOO_CS *gorm.DB
 
 func Init() error {
 	var err error
@@ -30,6 +31,9 @@ func Init() error {
 	}
 	go func() {
 		if err := AutoMigrateDB(DB); err != nil {
+			logrus.Fatalf("Auto migrate database failed: %v", err)
+		}
+		if err := AutoMigrateDBProduct(DB); err != nil {
 			logrus.Fatalf("Auto migrate database failed: %v", err)
 		}
 	}()

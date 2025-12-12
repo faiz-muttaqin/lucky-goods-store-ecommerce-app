@@ -16,23 +16,36 @@ func Routes() {
 
 	r.GET("/options", handler.GetOptions())
 	// r.GET("/users/hehe", handler.GET_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"Role"}))
-	api := r.Group("")
-	{
-		api.OPTIONS("/auth/login", handler.GetAuthLogin())
-		api.GET("/auth/login", handler.GetAuthLogin())
-		api.GET("/auth/logout", handler.GetAuthLogout())
-		api.GET("/auth/verify", handler.VerifyAuth()) // Test auth endpoint
-		api.GET("/roles", handler.GetRoles())
-		api.GET("/users", handler.GET_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"UserRole"}))
-		api.POST("/users", handler.POST_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"UserRole"}))
-		api.PATCH("/users", handler.PATCH_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"UserRole"}))
-		api.PUT("/users", handler.PUT_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"UserRole"}))
-		api.DELETE("/users", handler.DELETE_DEFAULT_TableDataHandler(database.DB, &model.User{}))
+	r.OPTIONS("/auth/login", handler.GetAuthLogin())
+	r.GET("/auth/login", handler.GetAuthLogin())
+	r.GET("/auth/logout", handler.GetAuthLogout())
+	r.GET("/auth/verify", handler.VerifyAuth()) // Test auth endpoint
+	r.GET("/roles", handler.GetRoles())
+	r.GET("/users", handler.GET_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"UserRole"}))
+	r.POST("/users", handler.POST_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"UserRole"}))
+	r.PATCH("/users", handler.PATCH_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"UserRole"}))
+	r.PUT("/users", handler.PUT_DEFAULT_TableDataHandler(database.DB, &model.User{}, []string{"UserRole"}))
+	r.DELETE("/users", handler.DELETE_DEFAULT_TableDataHandler(database.DB, &model.User{}))
 
-		// Theme endpoints
-		api.GET("/themes", handler.GET_DEFAULT_TableDataHandler(database.DB, &model.Theme{}, []string{}))
-		api.POST("/themes", handler.POST_DEFAULT_TableDataHandler(database.DB, &model.Theme{}, []string{}))
-		api.PATCH("/themes", handler.PATCH_DEFAULT_TableDataHandler(database.DB, &model.Theme{}, []string{}))
-		api.DELETE("/themes", handler.DELETE_DEFAULT_TableDataHandler(database.DB, &model.Theme{}))
-	}
+	// Theme endpoints
+	r.GET("/themes", handler.GET_DEFAULT_TableDataHandler(database.DB, &model.Theme{}, []string{}))
+	r.POST("/themes", handler.POST_DEFAULT_TableDataHandler(database.DB, &model.Theme{}, []string{}))
+	r.PATCH("/themes", handler.PATCH_DEFAULT_TableDataHandler(database.DB, &model.Theme{}, []string{}))
+	r.DELETE("/themes", handler.DELETE_DEFAULT_TableDataHandler(database.DB, &model.Theme{}))
+
+	// Product endpoints - Public Read, Protected CUD
+	r.GET("/products", handler.GetProducts(database.DB))          // Public: Get all products with filters
+	r.GET("/products/:id", handler.GetProductByID(database.DB))   // Public: Get single product
+	r.POST("/products", handler.CreateProduct(database.DB))       // Protected: Create product
+	r.PUT("/products/:id", handler.UpdateProduct(database.DB))    // Protected: Update product
+	r.PATCH("/products/:id", handler.UpdateProduct(database.DB))  // Protected: Update product (alias)
+	r.DELETE("/products/:id", handler.DeleteProduct(database.DB)) // Protected: Delete product
+
+	// Category endpoints - Public
+	r.GET("/categories", handler.GetCategories(database.DB))        // Get all categories
+	r.GET("/sub-categories", handler.GetSubCategories(database.DB)) // Get subcategories
+
+	// Shop endpoints - Public
+	r.GET("/shops", handler.GetShops(database.DB)) // Get all shops
+
 }
