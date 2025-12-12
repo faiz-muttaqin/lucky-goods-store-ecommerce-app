@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/clr"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/util"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/clr"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 

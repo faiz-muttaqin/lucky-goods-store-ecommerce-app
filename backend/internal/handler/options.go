@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/database"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/model"
+	"github.com/faiz-muttaqin/lgs/backend/internal/database"
+	"github.com/faiz-muttaqin/lgs/backend/internal/model"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"

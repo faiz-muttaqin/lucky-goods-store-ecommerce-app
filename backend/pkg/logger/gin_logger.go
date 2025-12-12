@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/util"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mssola/user_agent"

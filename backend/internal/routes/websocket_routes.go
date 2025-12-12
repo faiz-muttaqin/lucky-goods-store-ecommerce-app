@@ -1,6 +1,6 @@
 package routes
 
-import "github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/util"
+import "github.com/faiz-muttaqin/lgs/backend/pkg/util"
 
 func WebSocketRoutes() {
 	r := R.Group(util.GetPathOnly(util.Getenv("VITE_BACKEND", "/api")))

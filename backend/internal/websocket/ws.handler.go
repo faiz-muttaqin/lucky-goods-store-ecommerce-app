@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/helper"
+	"github.com/faiz-muttaqin/lgs/backend/internal/helper"
 	"github.com/gobwas/ws"
 	"github.com/sirupsen/logrus"
 )

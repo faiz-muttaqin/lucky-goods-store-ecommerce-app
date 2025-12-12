@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/version"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/version"
 )
 
 func Version(versionFiles []byte) error {

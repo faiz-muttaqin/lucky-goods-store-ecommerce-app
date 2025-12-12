@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/model"
+	"github.com/faiz-muttaqin/lgs/backend/internal/model"
 
 	"gorm.io/gorm"
 )

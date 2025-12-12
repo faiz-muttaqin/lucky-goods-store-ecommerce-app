@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/types"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/types"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"gorm.io/gorm"

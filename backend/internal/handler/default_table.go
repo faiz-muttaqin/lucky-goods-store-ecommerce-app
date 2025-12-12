@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/types"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/util"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/types"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/util"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/xuri/excelize/v2"

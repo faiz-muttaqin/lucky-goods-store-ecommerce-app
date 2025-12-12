@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/model"
+	"github.com/faiz-muttaqin/lgs/backend/internal/model"
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"

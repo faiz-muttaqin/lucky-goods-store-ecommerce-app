@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/database"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/handler"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/model"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/util"
+	"github.com/faiz-muttaqin/lgs/backend/internal/database"
+	"github.com/faiz-muttaqin/lgs/backend/internal/handler"
+	"github.com/faiz-muttaqin/lgs/backend/internal/model"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 

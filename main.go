@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/args"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/logger"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/util"
+	"github.com/faiz-muttaqin/lgs/backend"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/args"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/logger"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/util"
 )
 
 //go:embed package.json

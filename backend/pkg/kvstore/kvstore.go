@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/clr"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/clr"
 	"github.com/go-redis/redis/v8"
 )
 

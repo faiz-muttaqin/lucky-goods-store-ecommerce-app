@@ -3,7 +3,7 @@ package database
 import (
 	"os"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/util"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/util"
 
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"

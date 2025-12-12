@@ -1,4 +1,4 @@
-module github.com/faiz-muttaqin/shadcn-admin-go-starter
+module github.com/faiz-muttaqin/lgs
 
 go 1.25.3
 

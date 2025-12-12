@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/helper"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/model"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/audit"
+	"github.com/faiz-muttaqin/lgs/backend/internal/helper"
+	"github.com/faiz-muttaqin/lgs/backend/internal/model"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/audit"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

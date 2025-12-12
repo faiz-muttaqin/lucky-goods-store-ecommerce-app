@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/model"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/types"
+	"github.com/faiz-muttaqin/lgs/backend/internal/model"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/types"
 	"gorm.io/gorm"
 )
 

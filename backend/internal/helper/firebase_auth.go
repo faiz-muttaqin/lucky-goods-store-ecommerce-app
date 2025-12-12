@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"firebase.google.com/go/auth"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/database"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/internal/model"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/types"
-	"github.com/faiz-muttaqin/shadcn-admin-go-starter/backend/pkg/util"
+	"github.com/faiz-muttaqin/lgs/backend/internal/database"
+	"github.com/faiz-muttaqin/lgs/backend/internal/model"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/types"
+	"github.com/faiz-muttaqin/lgs/backend/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 
