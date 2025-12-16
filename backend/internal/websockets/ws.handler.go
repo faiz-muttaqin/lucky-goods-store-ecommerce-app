@@ -19,23 +19,3 @@ func WebsocketHandlerGin(c *gin.Context) {
 	logrus.Printf("WebSocket connection attempt from user: %s (ID: %d)", userData.Email, userData.ID)
 	HandleWebSocket(c.Writer, c.Request, userData, database.DB)
 }
-
-// func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
-// 	userData, err := helper.GetFirebaseUser2(r)
-// 	if err != nil {
-// 		http.Error(w, "Unauthorized: user authentication failed", http.StatusUnauthorized)
-// 		return
-// 	}
-// 	fmt.Println(userData)
-
-// 	// Upgrade connection
-// 	conn, _, _, err := ws.UpgradeHTTP(r, w)
-// 	if err != nil {
-// 		return
-// 	}
-// 	if err := WS_POOL.Add(conn); err != nil {
-// 		logrus.Printf("Failed to add connection %v", err)
-// 		conn.Close()
-// 	}
-
-// }
