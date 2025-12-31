@@ -35,9 +35,13 @@ func Routes() {
 
 	// Product endpoints - Public Read, Protected CUD
 	r.GET("/products", handler.GET_DEFAULT_TABLE(database.DB, &model.Product{}, []string{"Shop"})) // Public: Get all products with filters
-	// r.GET("/products", handler.GetProducts(database.DB))          // Public: Get all products with filters
-	r.GET("/products/:id", handler.GetProductByID(database.DB))   // Public: Get single product
-	r.POST("/products", handler.CreateProduct(database.DB))       // Protected: Create product
+	r.GET("/products/:id", handler.GetProductByID(database.DB))                                    // Public: Get single product
+
+	r.POST("/products", handler.CreateProduct(database.DB))               // Protected: Create product
+	r.GET("/products/batch/template", handler.CreateProduct(database.DB)) // Protected: Create product
+	r.POST("/products/batch/upload", handler.CreateProduct(database.DB))  // Protected: Create product
+	r.POST("/products/batch/confirm", handler.CreateProduct(database.DB)) // Protected: Create product
+
 	r.PUT("/products/:id", handler.UpdateProduct(database.DB))    // Protected: Update product
 	r.PATCH("/products/:id", handler.UpdateProduct(database.DB))  // Protected: Update product (alias)
 	r.DELETE("/products/:id", handler.DeleteProduct(database.DB)) // Protected: Delete product

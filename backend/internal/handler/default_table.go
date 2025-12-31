@@ -333,11 +333,7 @@ func GET_DEFAULT_TableDataHandler(db *gorm.DB, model interface{}, preload []stri
 }
 
 // Ensure this not coluumn name draw, start, length, sort, schema
-func GET_DEFAULT_TABLE(
-	db *gorm.DB,
-	model interface{},
-	preload []string,
-) gin.HandlerFunc {
+func GET_DEFAULT_TABLE(db *gorm.DB, model interface{}, preload []string) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		// =============================
@@ -550,6 +546,306 @@ func GET_DEFAULT_TABLE(
 	}
 }
 
+// Ensure this not coluumn name draw, start, length, sort, schema
+func GET_DEFAULT_TABLE_EXCEL(db *gorm.DB, model interface{}, preload []string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t := reflect.TypeOf(model).Elem()
+
+		// =============================
+		// 🔹 Build schema dari struct
+		// =============================
+		schema := filter.BuildSchemaFromStruct(model)
+
+		// =============================
+		// 🔹 Query params for filtering and sorting
+		// =============================
+		var req struct {
+			Sort   string `form:"sort"`
+			Fields string `form:"fields"`
+			Limit  int    `form:"limit"` // Max rows to export
+		}
+		_ = c.BindQuery(&req)
+
+		// Limit export to prevent memory issues (default 10000)
+		if req.Limit <= 0 {
+			req.Limit = 10000
+		}
+		if req.Limit > 50000 {
+			req.Limit = 50000
+		}
+
+		// =============================
+		// 🔹 Base query + preload
+		// =============================
+		query := db.Model(model)
+		for _, p := range preload {
+			query = query.Preload(p)
+		}
+
+		// Track which fields to export
+		var selectedJSONKeys []string
+		var selectedFieldSchemas []filter.FieldSchema
+
+		if req.Fields != "" {
+			fields := strings.Split(req.Fields, ",")
+			dbColumns := []string{}
+
+			for _, f := range fields {
+				f = strings.TrimSpace(f)
+				fieldSchema, exists := schema[f]
+				if !exists {
+					c.JSON(http.StatusBadRequest, gin.H{
+						"success": false,
+						"error":   "Invalid field: " + f,
+					})
+					return
+				}
+				dbColumns = append(dbColumns, fieldSchema.DBColumn)
+				selectedJSONKeys = append(selectedJSONKeys, f)
+				selectedFieldSchemas = append(selectedFieldSchemas, fieldSchema)
+			}
+
+			// Always include ID for reference
+			if !util.Contains(dbColumns, "id") {
+				dbColumns = append([]string{"id"}, dbColumns...)
+				if !util.Contains(selectedJSONKeys, "id") {
+					selectedJSONKeys = append([]string{"id"}, selectedJSONKeys...)
+					if idSchema, ok := schema["id"]; ok {
+						selectedFieldSchemas = append([]filter.FieldSchema{idSchema}, selectedFieldSchemas...)
+					}
+				}
+			}
+
+			query = query.Select(dbColumns)
+		} else {
+			// Export all visible fields
+			for i := 0; i < t.NumField(); i++ {
+				field := t.Field(i)
+				jsonTag := strings.Split(field.Tag.Get("json"), ",")[0]
+				if jsonTag == "" || jsonTag == "-" {
+					continue
+				}
+
+				if fieldSchema, ok := schema[jsonTag]; ok && fieldSchema.Visible {
+					selectedJSONKeys = append(selectedJSONKeys, jsonTag)
+					selectedFieldSchemas = append(selectedFieldSchemas, fieldSchema)
+				}
+			}
+		}
+
+		// =============================
+		// 🔹 Apply filtering DSL
+		// =============================
+		var err error
+		query, err = filter.ApplyQueryFilters(
+			query,
+			c.Request.URL.Query(),
+			schema,
+		)
+		if err != nil {
+			if filterErr, ok := err.(*filter.FilterError); ok {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"success": false,
+					"message": filterErr.Message,
+					"error":   filterErr,
+				})
+			} else {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"success": false,
+					"message": err.Error(),
+					"error":   err.Error(),
+				})
+			}
+			return
+		}
+
+		// Apply sorting
+		if req.Sort == "" {
+			req.Sort = "-id"
+		}
+		query, err = filter.ApplySorting(query, req.Sort, schema)
+		if err != nil {
+			if filterErr, ok := err.(*filter.FilterError); ok {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"success": false,
+					"message": filterErr.Message,
+					"error":   filterErr,
+				})
+			} else {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"success": false,
+					"message": err.Error(),
+					"error":   err.Error(),
+				})
+			}
+			return
+		}
+
+		// Limit results for export
+		query = query.Limit(req.Limit)
+
+		// =============================
+		// 🔹 Execute query
+		// =============================
+		results := reflect.New(
+			reflect.SliceOf(reflect.TypeOf(model).Elem()),
+		).Interface()
+
+		if err := query.Find(results).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"error":   err.Error(),
+			})
+			return
+		}
+
+		// =============================
+		// 🔹 Create Excel file
+		// =============================
+		f := excelize.NewFile()
+		sheetName := "Sheet1"
+		defer f.Close()
+
+		// Set sheet name based on model name
+		modelName := t.Name()
+		if modelName != "" {
+			sheetName = modelName
+			f.SetSheetName("Sheet1", sheetName)
+		}
+
+		// =============================
+		// 🔹 Write headers
+		// =============================
+		for i, jsonKey := range selectedJSONKeys {
+			col := util.NumberToAlphabet(i)
+			headerName := util.AddSpaceAtSnakeCaseAndUppercase(jsonKey)
+			f.SetCellValue(sheetName, col+"1", headerName)
+		}
+
+		// Apply header styling
+		headerStyle, _ := f.NewStyle(&excelize.Style{
+			Font: &excelize.Font{
+				Bold: true,
+				Size: 12,
+			},
+			Fill: excelize.Fill{
+				Type:    "pattern",
+				Color:   []string{"#4472C4"},
+				Pattern: 1,
+			},
+			Alignment: &excelize.Alignment{
+				Horizontal: "center",
+				Vertical:   "center",
+			},
+		})
+
+		lastCol := util.NumberToAlphabet(len(selectedJSONKeys) - 1)
+		f.SetCellStyle(sheetName, "A1", lastCol+"1", headerStyle)
+
+		// =============================
+		// 🔹 Write data rows
+		// =============================
+		sliceValue := reflect.ValueOf(results).Elem()
+
+		// Build field index map - map JSON keys to struct field indices
+		fieldMap := make(map[string]int)
+		for i := 0; i < t.NumField(); i++ {
+			jsonTag := strings.Split(t.Field(i).Tag.Get("json"), ",")[0]
+			if jsonTag != "" && jsonTag != "-" {
+				fieldMap[jsonTag] = i
+			}
+		}
+
+		for rowIdx := 0; rowIdx < sliceValue.Len(); rowIdx++ {
+			row := sliceValue.Index(rowIdx)
+			excelRow := rowIdx + 2 // Start from row 2 (row 1 is header)
+
+			for colIdx, jsonKey := range selectedJSONKeys {
+				col := util.NumberToAlphabet(colIdx)
+				cell := col + fmt.Sprintf("%d", excelRow)
+
+				if fieldIdx, exists := fieldMap[jsonKey]; exists {
+					fieldValue := row.Field(fieldIdx)
+
+					// Format value based on type
+					var cellValue interface{}
+
+					if fieldValue.Type() == reflect.TypeOf(time.Time{}) {
+						timeVal := fieldValue.Interface().(time.Time)
+						if !timeVal.IsZero() {
+							cellValue = timeVal.Format("2006-01-02 15:04:05")
+						} else {
+							cellValue = ""
+						}
+					} else if fieldValue.Type() == reflect.TypeOf(sql.NullTime{}) {
+						nullTime := fieldValue.Interface().(sql.NullTime)
+						if nullTime.Valid {
+							cellValue = nullTime.Time.Format("2006-01-02 15:04:05")
+						} else {
+							cellValue = ""
+						}
+					} else if fieldValue.Kind() == reflect.Bool {
+						if fieldValue.Bool() {
+							cellValue = "Yes"
+						} else {
+							cellValue = "No"
+						}
+					} else if fieldValue.Kind() == reflect.Ptr && fieldValue.IsNil() {
+						cellValue = ""
+					} else if fieldValue.Kind() == reflect.Struct {
+						// Skip nested structs (relations)
+						cellValue = ""
+					} else if fieldValue.Kind() == reflect.Slice {
+						// Skip slices (relations)
+						cellValue = ""
+					} else {
+						cellValue = fieldValue.Interface()
+					}
+
+					f.SetCellValue(sheetName, cell, cellValue)
+				}
+			}
+		}
+
+		// Auto-fit columns
+		for i := 0; i < len(selectedJSONKeys); i++ {
+			col := util.NumberToAlphabet(i)
+			f.SetColWidth(sheetName, col, col, 15)
+		}
+
+		// =============================
+		// 🔹 Write to buffer and send
+		// =============================
+		var buffer bytes.Buffer
+		if err := f.Write(&buffer); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Failed to create Excel file: " + err.Error(),
+				"error":   err.Error(),
+			})
+			return
+		}
+
+		// Generate filename with timestamp
+		timestamp := time.Now().Format("20060102_150405")
+		filename := fmt.Sprintf("%s_export_%s.xlsx", util.ToSnakeCase(modelName), timestamp)
+
+		// Set response headers
+		c.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+		c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+		c.Header("Content-Length", fmt.Sprintf("%d", buffer.Len()))
+
+		// Send file
+		_, err = c.Writer.Write(buffer.Bytes())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Failed to send Excel file: " + err.Error(),
+				"error":   err.Error(),
+			})
+		}
+	}
+}
 func DELETE_DEFAULT_TableDataHandler(db *gorm.DB, model interface{}) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		type Req struct {
